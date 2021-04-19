@@ -5,7 +5,12 @@
         <span class="menu-item-selected">Danh sách nhân viên</span>
       </div>
       <div class="content-header-right">
-        <a class="btn btn-primary btn-add-employee" href="#" role="button">
+        <a
+          class="btn btn-primary btn-add-employee"
+          href="#"
+          role="button"
+          v-on:click="btnAddOnClick"
+        >
           <div class="icon icon-add-employee"></div>
           <div class="item-name">Thêm nhân viên</div>
         </a>
@@ -81,15 +86,128 @@
       </div>
     </div>
     <div class="data-table">
-      table
+      <table class="table" width="100%" border="0">
+        <thead>
+          <tr>
+            <th>Mã nhân viên</th>
+            <th>Họ và tên</th>
+            <th>Giới tính</th>
+            <th>Ngày sinh</th>
+            <th>Điện thoại</th>
+            <th>Email</th>
+            <th>Chức vụ</th>
+            <th>Phòng ban</th>
+            <th>Mức lương cơ bản</th>
+            <th>Tình trạng công việc</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr
+            v-for="employee in employees"
+            :key="employee.EmployeeId"
+            @dblclick="rowOnClick(employee)"
+          >
+            <td>{{ employee.EmployeeCode }}</td>
+            <td>{{ employee.FullName }}</td>
+            <td>{{ employee.GenderName }}</td>
+            <td>{{ employee.DateOfBirth }}</td>
+            <td>{{ employee.PhoneNumber }}</td>
+            <td>{{ employee.Email }}</td>
+            <td>{{ employee.PositionName }}</td>
+            <td>{{ employee.DepartmentName }}</td>
+            <td>{{ employee.Salary }}</td>
+            <td>{{ employee.WorkStatus }}</td>
+          </tr>
+        </tbody>
+      </table>
     </div>
+
+    <footer class="footer-table">
+      <div class="row">
+        <div class="col-sm footer-table-left">
+          <span class="text-muted">Hiển thị 1-10/1000 nhân viên</span>
+        </div>
+        <div class="col-sm footer-table-center">
+          <div class="paging-left">
+            <a class="btn btn-paging-first" href="#" role="button"
+              >&#60;&#60;
+              <!-- <i class="fa fa-angle-double-left icon-paging-first" aria-hidden="true"></i> -->
+            </a>
+            <a class="btn btn-paging-pre" href="#" role="button"
+              >&#60;
+              <!-- <i class="fa fa-chevron-left icon-paging-previous" aria-hidden="true"></i> -->
+            </a>
+          </div>
+          <div class="paging-number">
+            <a class="btn btn-paging-number-item active" href="#" role="button"
+              >1</a
+            >
+            <a class="btn btn-paging-number-item" href="#" role="button">2</a>
+            <a class="btn btn-paging-number-item" href="#" role="button">3</a>
+            <a class="btn btn-paging-number-item" href="#" role="button">4</a>
+          </div>
+          <div class="paging-right">
+            <a class="btn btn-paging-next" href="#" role="button"
+              >&#62;
+              <!-- <i class="fa fa-chevron-right icon-paging-next" aria-hidden="true"></i> -->
+            </a>
+            <a class="btn btn-paging-last" href="#" role="button"
+              >&#62;&#62;
+              <!-- <i class="fa fa-angle-double-right  icon-paging-last" aria-hidden="true"></i> -->
+            </a>
+          </div>
+        </div>
+        <div class="col-sm footer-table-right">
+          <span class="text-muted">10 nhân viên/trang</span>
+        </div>
+      </div>
+    </footer>
+    <Details
+      @closePopup="closePopup"
+      :isHide="isHideParent"
+      :employee="selectedEmployee"
+    />
   </div>
 </template>
 
 <script>
+import * as axios from "axios";
+import Details from "./FormDetail.vue";
 export default {
   name: "Content",
-  props: {},
+  components: {
+    Details,
+  },
+  methods: {
+    btnAddOnClick() {
+      this.isHideParent = false;
+    },
+    rowOnClick(employee) {
+      console.log(employee);
+      this.selectedEmployee = employee;
+      this.isHideParent = false;
+    },
+    closePopup(value) {
+      this.isHideParent = value;
+    },
+    async initEmployee() {
+      const response = await axios.get("http://api.manhnv.net/v1/Employees");
+      console.log(response.data);
+      this.employees = response.data;
+    },
+  },
+
+  data() {
+    return {
+      employees: [],
+      selectedEmployee: {},
+      isHideParent: true,
+    };
+  },
+
+  async created() {
+    await this.initEmployee();
+  },
 };
 </script>
 
@@ -137,7 +255,7 @@ export default {
   background-repeat: no-repeat;
   background-size: 20px;
   background-position: center;
-  background-image: url("../assets/icon/add.png");
+  background-image: url("../../assets/icon/add.png");
 }
 
 .customer-filter {
@@ -183,7 +301,7 @@ export default {
   background-repeat: no-repeat;
   background-size: 20px;
   background-position: center;
-  background-image: url("../assets/icon/search.png");
+  background-image: url("../../assets/icon/search.png");
 }
 
 .input-group-text {
@@ -217,6 +335,69 @@ export default {
 }
 
 .customer-filter-right .btn-reset-filter .icon-reset-filter {
-  background-image: url("../assets/icon/refresh.png");
+  background-image: url("../../assets/icon/refresh.png");
+}
+
+.data-table {
+  position: absolute;
+  right: 24px;
+  left: 24px;
+  bottom: 60px;
+  top: 128px;
+  overflow-y: auto;
+}
+
+.footer-table {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  height: 60px;
+  line-height: 60px;
+  background-color: #f5f5f5;
+}
+
+.footer-table .row {
+  width: 100% !important;
+  margin: 0;
+}
+
+.footer-table-left {
+  text-align: left;
+}
+
+.footer-table-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.footer-table-center .paging-number .btn-paging-number-item {
+  background-color: #e9ebee;
+  color: #6c757d;
+  border-radius: 50%;
+}
+
+.footer-table-center .paging-number .active {
+  background-color: #01b075;
+  color: #ffffff;
+}
+
+.btn-paging-first,
+.btn-paging-last,
+.btn-paging-next,
+.btn-paging-pre {
+  color: #6c757d;
+}
+
+.btn-paging-first,
+.btn-paging-last,
+.btn-paging-next,
+.btn-paging-pre {
+  font-size: 21px;
+  font-weight: 600;
+}
+
+.footer-table-right {
+  text-align: right;
 }
 </style>

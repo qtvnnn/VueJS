@@ -13,7 +13,7 @@
 <script>
 import NavBar from "./components/NavBar.vue";
 import Header from "./components/Header.vue";
-import Contetn from "./components/Content.vue";
+import Contetn from "./components/Content/DataTable.vue";
 
 export default {
   name: "App",
