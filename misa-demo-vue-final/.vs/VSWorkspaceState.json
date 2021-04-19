@@ -1,0 +1,16 @@
+{
+  "ExpandedNodes": [
+    "",
+    "\\src",
+    "\\src\\components",
+    "\\src\\components\\layout",
+    "\\src\\router",
+    "\\src\\styles",
+    "\\src\\styles\\pages",
+    "\\src\\styles\\pages\\dictionary",
+    "\\src\\styles\\pages\\dictionary\\customer",
+    "\\src\\styles\\pages\\dictionary\\customer\\customer-list.css"
+  ],
+  "SelectedNode": "\\src\\views\\dictionary\\employee\\EmployeeListDetail.vue",
+  "PreviewInSolutionExplorer": false
+}
