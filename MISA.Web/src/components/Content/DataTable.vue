@@ -166,6 +166,7 @@
       @closePopup="closePopup"
       :isHide="isHideParent"
       :employee="selectedEmployee"
+      :initEmployee="initEmployee"
     />
   </div>
 </template>
@@ -192,7 +193,6 @@ export default {
     },
     async initEmployee() {
       const response = await axios.get("http://api.manhnv.net/v1/Employees");
-      console.log(response.data);
       this.employees = response.data;
     },
   },

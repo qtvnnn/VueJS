@@ -12,22 +12,17 @@
   line-height: 60px;
   padding-left: 16px;
   display: flex;
-  font-size: 24px;
+  font-size: 23px;
+}
+
+.dialog-header-title {
+  font-weight: 600;
 }
 
 .dialog-header-close {
   position: absolute;
   right: 16px;
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
-  cursor: pointer;
-  top: 10px;
-  align-items: center;
-  border: none;
-  background-color: transparent;
-  font-size: 24px;
-  line-height: 24px;
+  top: 8px;
 }
 .dialog-modal {
   position: fixed;
@@ -48,7 +43,7 @@
   top: calc(50% - 450px);
 }
 .dialog-body {
-  padding: 0 16px 16px 16px;
+  padding: 16px 16px 16px 16px;
 }
 .dialog-footer {
   display: flex;
@@ -56,26 +51,29 @@
   height: 60px;
   background-color: #e9ebee;
   border-radius: 0 0 5px 5px;
-  align-items: center;
+  /* align-items: center; */
   justify-content: flex-end;
   padding: 12px 24px;
   box-sizing: border-box;
 }
-.el-avatar-employee {
-  padding-top: 16px;
-  padding-right: 16px;
+.avatar-employee {
+  padding: 16px;
 }
-.el-avatar-note {
+.form-input-employee {
+  padding: 16px;
+}
+.avatar-note {
   font-size: 12px;
+  text-align: center;
 }
-.el-avatar-employee .el-avatar {
+.avatar-employee .el-avatar {
   border: 1px solid #ccc;
   width: 160px;
   height: 160px;
   margin: 0 auto;
   border-radius: 50%;
   cursor: pointer;
-  background-image: url(/content/img/default-avatar.jpg);
+  background-image: url(../../assets/img/default-avatar.jpg);
   background-repeat: no-repeat;
   background-position: center;
   background-size: cover;
@@ -85,6 +83,22 @@
   right: 40px;
   line-height: 40px;
   font-style: italic;
+}
+.label-required {
+  color: red;
+}
+.label-input {
+  margin-bottom: 0px;
+  margin-top: 1rem;
+}
+.hr-group-label {
+  margin: 0px;
+}
+
+.btn-save-form {
+  background-color: #01b075;
+  color: white;
+  margin-left: 15px;
 }
 </style>
 <template>
@@ -103,47 +117,50 @@
         <div class="dialog-header">
           <div class="dialog-header-title">THÔNG TIN NHÂN VIÊN</div>
           <div class="dialog-header-close">
-            <button v-on:click="btnCancelOnClick">x</button>
+            <!-- <button v-on:click="btnCancelOnClick">x</button> -->
+            <button type="button" class="close" v-on:click="btnCancelOnClick">
+              <span aria-hidden="true">&times;</span>
+            </button>
           </div>
         </div>
         <div class="dialog-body">
-          <div class="m-row m-flex">
-            <div class="m-col el-avatar-employee m-flex-1">
+          <div class="row">
+            <div class="col-4 avatar-employee">
               <div class="el-avatar"></div>
-              <div class="el-avatar-note text-align-center">
-                (Vui lòng chọn ảnh có định dạng <br /><b
-                  >.jpg, .jpeg, .png, .gif. </b
+              <div class="avatar-note">
+                (Vui lòng chọn ảnh có định dạng <br /><strong
+                  >.jpg, .jpeg, .png, .gif. </strong
                 >)
               </div>
             </div>
-            <div class="m-col el-left m-flex-4">
+            <div class="col-8 form-input-employee">
               <div class="group-label-info">A. Thông tin chung:</div>
               <hr class="hr-group-label" />
-              <div class="m-row mg-top-0 m-flex">
-                <div class="m-col m-flex-1">
-                  <div class="m-label">
-                    Mã nhân viên (<span class="label-required">*</span>)
-                  </div>
-                  <div class="m-control">
+              <div class="row">
+                <div class="col">
+                  <label class="label-input">
+                    Mã nhân viên <span class="label-required">(*)</span>
+                  </label>
+                  <div class="input-group">
                     <input
                       id="txtEmployeeCode"
                       fieldName="EmployeeCode"
                       required
-                      class="input-required"
+                      class="form-control"
                       type="text"
                       v-model="employee.EmployeeCode"
                     />
                   </div>
                 </div>
-                <div class="m-flex-1 mg-left-10px">
-                  <div class="m-label">
-                    Họ và tên (<span class="label-required">*</span>)
-                  </div>
-                  <div class="m-control">
+                <div class="col">
+                  <label class="label-input">
+                    Họ và tên <span class="label-required">(*)</span>
+                  </label>
+                  <div class="input-group">
                     <input
                       id="txtFullName"
                       fieldName="FullName"
-                      class="input-required"
+                      class="form-control"
                       type="text"
                       required
                       v-model="employee.FullName"
@@ -151,38 +168,40 @@
                   </div>
                 </div>
               </div>
-              <div class="m-row m-flex">
-                <div class="m-flex-1">
-                  <div class="m-label">Ngày sinh</div>
-                  <input
-                    class="m-combobox-input"
-                    type="date"
-                    autocomplete="off"
-                    v-model="employee.DateOfBirth"
-                  />
+              <div class="row">
+                <div class="col">
+                  <label class="label-input">Ngày sinh</label>
+                  <div class="input-group">
+                    <input
+                      class="form-control"
+                      type="date"
+                      autocomplete="off"
+                      v-model="employee.DateOfBirth"
+                    />
+                  </div>
                 </div>
-                <div class="m-flex-1 mg-left-10px">
-                  <div class="m-label">Giới tính</div>
-                  <select
-                    id="cbxGender"
-                    class="m-control"
-                    v-model="employee.Gender"
-                  >
-                    <option value="1">Nam</option>
-                    <option value="0">Nữ</option>
-                  </select>
+                <div class="col">
+                  <label class="label-input">Giới tính</label>
+                  <div class="input-group">
+                    <select
+                      id="cbxGender"
+                      class="form-control"
+                      v-model="employee.Gender"
+                    >
+                      <option value="1">Nam</option>
+                      <option value="0">Nữ</option>
+                    </select>
+                  </div>
                 </div>
               </div>
-              <div class="m-row m-flex">
-                <div class="m-flex-1">
-                  <div
-                    class="m-label"
-                    title="Số chứng minh thư nhân dân hoặc căn cước công dân"
-                  >
-                    Số CMTND/ Căn cước (<span class="label-required">*</span>)
-                  </div>
-                  <div class="m-control">
+              <div class="row">
+                <div class="col">
+                  <label class="label-input">
+                    Số CMTND/ Căn cước <span class="label-required">(*)</span>
+                  </label>
+                  <div class="input-group">
                     <input
+                      class="form-control"
                       id="txtIdentityNumber"
                       fieldName="text"
                       type="text"
@@ -191,38 +210,28 @@
                     />
                   </div>
                 </div>
-                <div class="m-flex-1 mg-left-10px">
-                  <div class="m-label">Ngày cấp</div>
-                  <input
-                    class="m-combobox-input"
-                    type="date"
-                    autocomplete="off"
-                    v-model="employee.IdentityDate"
-                  />
-                </div>
-              </div>
-              <div class="m-row m-flex">
-                <div class="m-flex-1">
-                  <div class="m-label">Nơi cấp</div>
-                  <div class="m-control">
+                <div class="col">
+                  <label class="label-input">Nơi cấp</label>
+                  <div class="input-group">
                     <input
                       id="txtIdentityPlace"
                       fieldName="PhoneNumber"
-                      class="input-required"
+                      class="form-control"
                       type="text"
                       v-model="employee.IdentityPlace"
                     />
                   </div>
                 </div>
-                <div class="m-flex-1"></div>
               </div>
-              <div class="m-row m-flex">
-                <div class="m-col m-flex-1">
-                  <div class="m-label">
-                    Email (<span class="label-required">*</span>)
-                  </div>
-                  <div class="m-control">
+
+              <div class="row">
+                <div class="col">
+                  <label class="label-input">
+                    Email <span class="label-required">(*)</span>
+                  </label>
+                  <div class="input-group">
                     <input
+                      class="form-control"
                       id="txtEmail"
                       fieldName="Email"
                       type="email"
@@ -232,15 +241,15 @@
                     />
                   </div>
                 </div>
-                <div class="m-flex-1 mg-left-10px">
-                  <div class="m-label">
-                    Số điện thoại (<span class="label-required">*</span>)
-                  </div>
-                  <div class="m-control">
+                <div class="col">
+                  <label class="label-input">
+                    Số điện thoại <span class="label-required">(*)</span>
+                  </label>
+                  <div class="input-group">
                     <input
                       id="txtPhoneNumber"
                       fieldName="FullName"
-                      class="input-required"
+                      class="form-control"
                       type="text"
                       required
                       v-model="employee.PhoneNumber"
@@ -252,101 +261,99 @@
                 B. Thông tin công việc:
               </div>
               <hr class="hr-group-label" />
-              <div class="m-row m-flex">
-                <div class="m-flex-1">
-                  <div class="m-label">Vị trí</div>
-                  <select
-                    id="cbxPosition"
-                    fieldName="CustomerGroupName"
-                    fieldValue="CustomerGroupId"
-                    api="/api/customergroups"
-                    class="m-control"
-                    v-model="employee.PositionId"
-                  >
-                    <option value="3700cc49-55b5-69ea-4929-a2925c0f334d">
-                      Giám đốc
-                    </option>
-                    <option value="148ed882-32b8-218e-9c20-39c2f00615e8">
-                      Nhân viên
-                    </option>
-                    <option value="25c6c36e-1668-7d10-6e09-bf1378b8dc91">
-                      Thu ngân
-                    </option>
-                  </select>
-                </div>
-                <div class="m-flex-1 mg-left-10px">
-                  <div class="m-label">Phòng ban</div>
-                  <select
-                    id="cbnDepartment"
-                    fieldName="CustomerGroupName"
-                    fieldValue="CustomerGroupId"
-                    api="/api/customergroups"
-                    class="m-control"
-                    v-model="employee.DepartmentId"
-                  >
-                    <option value="142cb08f-7c31-21fa-8e90-67245e8b283e">
-                      Phòng Marketting
-                    </option>
-                    <option value="17120d02-6ab5-3e43-18cb-66948daf6128">
-                      Phòng đào tạo
-                    </option>
-                    <option value="469b3ece-744a-45d5-957d-e8c757976496">
-                      Phòng Nhân sự
-                    </option>
-                    <option value="4e272fc4-7875-78d6-7d32-6a1673ffca7c">
-                      Phòng Công nghệ
-                    </option>
-                  </select>
-                </div>
-              </div>
-              <div class="m-row m-flex">
-                <div class="m-flex-1">
-                  <div class="m-label">Mã số thuế cá nhân</div>
-                  <div class="m-control">
-                    <input id="txtAddress" fieldName="Address" type="text" />
+              <div class="row">
+                <div class="col">
+                  <label class="label-input">Vị trí</label>
+                  <div class="input-group">
+                    <select
+                      id="cbxPosition"
+                      fieldName="CustomerGroupName"
+                      fieldValue="CustomerGroupId"
+                      api="/api/customergroups"
+                      class="form-control"
+                      v-model="employee.PositionId"
+                    >
+                      <option value="3700cc49-55b5-69ea-4929-a2925c0f334d">
+                        Giám đốc
+                      </option>
+                      <option value="148ed882-32b8-218e-9c20-39c2f00615e8">
+                        Nhân viên
+                      </option>
+                      <option value="25c6c36e-1668-7d10-6e09-bf1378b8dc91">
+                        Thu ngân
+                      </option>
+                    </select>
                   </div>
                 </div>
-                <div class="m-flex-1 mg-left-10px">
-                  <div class="m-label">Mức lương cơ bản</div>
-                  <div class="m-control">
+                <div class="col">
+                  <label class="label-input">Phòng ban</label>
+                  <div class="input-group">
+                    <select
+                      id="cbnDepartment"
+                      fieldName="CustomerGroupName"
+                      fieldValue="CustomerGroupId"
+                      api="/api/customergroups"
+                      class="form-control"
+                      v-model="employee.DepartmentId"
+                    >
+                      <option value="142cb08f-7c31-21fa-8e90-67245e8b283e">
+                        Phòng Marketting
+                      </option>
+                      <option value="17120d02-6ab5-3e43-18cb-66948daf6128">
+                        Phòng đào tạo
+                      </option>
+                      <option value="469b3ece-744a-45d5-957d-e8c757976496">
+                        Phòng Nhân sự
+                      </option>
+                      <option value="4e272fc4-7875-78d6-7d32-6a1673ffca7c">
+                        Phòng Công nghệ
+                      </option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col">
+                  <label class="label-input">Mức lương cơ bản</label>
+                  <div class="input-group">
                     <input
+                      class="form-control"
                       id="txtSalary"
                       fieldName="Salary"
                       type="text"
-                      style="text-align: right; padding-right: 56px"
+                      style="border-right: none"
                       v-model="employee.Salary"
-                    /><span class="currency-for-input">(VNĐ)</span>
+                    />
+                    <div class="input-group-append">
+                      <span
+                        class="input-group-text"
+                        style="border-left: none; background: white"
+                        >(VNĐ)</span
+                      >
+                    </div>
                   </div>
                 </div>
-              </div>
-              <div class="m-row m-flex">
-                <div class="m-flex-1">
-                  <div class="m-label">Ngày gia nhập</div>
-                  <input
-                    class="m-combobox-input"
-                    type="date"
-                    autocomplete="off"
-                  />
-                </div>
-                <div class="m-flex-1 mg-left-10px">
-                  <div class="m-label">Tình trạng công việc</div>
-                  <select
-                    id="cboWorkStatus"
-                    fieldName="CustomerGroupName"
-                    fieldValue="CustomerGroupId"
-                    api="/api/customergroups"
-                    class="m-control"
-                  >
-                    <option value="19165ed7-212e-21c4-0428-030d4265475f">
-                      Đang làm việc
-                    </option>
-                    <option value="19165ed7-212e-21c4-0428-030d4265475f">
-                      Đang thử việc
-                    </option>
-                    <option value="19165ed7-212e-21c4-0428-030d4265475f">
-                      Nghỉ việc
-                    </option>
-                  </select>
+                <div class="col">
+                  <label class="label-input">Tình trạng công việc</label>
+                  <div class="input-group">
+                    <select
+                      id="cboWorkStatus"
+                      fieldName="CustomerGroupName"
+                      fieldValue="CustomerGroupId"
+                      api="/api/customergroups"
+                      class="form-control"
+                    >
+                      <option value="19165ed7-212e-21c4-0428-030d4265475f">
+                        Đang làm việc
+                      </option>
+                      <option value="19165ed7-212e-21c4-0428-030d4265475f">
+                        Đang thử việc
+                      </option>
+                      <option value="19165ed7-212e-21c4-0428-030d4265475f">
+                        Nghỉ việc
+                      </option>
+                    </select>
+                  </div>
                 </div>
               </div>
             </div>
@@ -355,17 +362,13 @@
         <div class="dialog-footer">
           <button
             id="btnCancel"
-            class="m-btn m-btn-default m-btn-cancel"
+            class="btn btn-default"
             v-on:click="btnCancelOnClick"
           >
-            Hủy
+            HỦY
           </button>
-          <button
-            id="btnSave"
-            @click="saveEmployee"
-            class="m-btn m-btn-default"
-          >
-            <i class="far fa-save"></i><span class="btn-text">Lưu</span>
+          <button id="btnSave" @click="saveEmployee" class="btn btn-save-form">
+            <i class="far fa-save"></i><span class="btn-text">LƯU</span>
           </button>
         </div>
       </div>
@@ -376,7 +379,11 @@
 <script>
 import * as axios from "axios";
 export default {
-  props: ["isHide", "employee"],
+  props: {
+    isHide: Boolean,
+    employee: Array,
+    initEmployee: Function
+  },
   methods: {
     btnCancelOnClick() {
       this.$emit("closePopup", true);
@@ -387,6 +394,8 @@ export default {
         this.employee
       );
 
+      this.$emit("closePopup", true);
+      this.initEmployee();
       console.log(response);
     },
   },
