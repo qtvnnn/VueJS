@@ -173,10 +173,10 @@
                   <label class="label-input">Ngày sinh</label>
                   <div class="input-group">
                     <input
+                      id="dtDateOfBirth"
                       class="form-control"
                       type="date"
-                      autocomplete="off"
-                      v-model="employee.DateOfBirth"
+                      v-model="dateOfBirthFormat"
                     />
                   </div>
                 </div>
@@ -190,6 +190,7 @@
                     >
                       <option value="1">Nam</option>
                       <option value="0">Nữ</option>
+                      <option value="2">Không xác định</option>
                     </select>
                   </div>
                 </div>
@@ -342,15 +343,19 @@
                       fieldValue="CustomerGroupId"
                       api="/api/customergroups"
                       class="form-control"
+                      v-model="employee.WorkStatus"
                     >
-                      <option value="19165ed7-212e-21c4-0428-030d4265475f">
-                        Đang làm việc
+                      <option value="0">
+                        Đã nghỉ việc
                       </option>
-                      <option value="19165ed7-212e-21c4-0428-030d4265475f">
+                      <option value="1">
+                        Thực tập sinh
+                      </option>
+                      <option value="2">
                         Đang thử việc
                       </option>
-                      <option value="19165ed7-212e-21c4-0428-030d4265475f">
-                        Nghỉ việc
+                      <option value="3">
+                        Nhân viên
                       </option>
                     </select>
                   </div>
@@ -381,25 +386,38 @@ import * as axios from "axios";
 export default {
   props: {
     isHide: Boolean,
-    employee: Array,
-    initEmployee: Function
+    employee: Object,
+    initEmployee: Function,
+    dateOfBirthFormat: String,
+    requestStatus: Number,
   },
   methods: {
     btnCancelOnClick() {
       this.$emit("closePopup", true);
     },
     async saveEmployee() {
-      const response = await axios.put(
-        "http://api.manhnv.net/v1/Employees/" + this.employee.EmployeeId,
-        this.employee
-      );
-
       this.$emit("closePopup", true);
-      this.initEmployee();
-      console.log(response);
+      this.employee.DateOfBirth = this.dateOfBirthFormat;
+      if (this.requestStatus == 0) {
+        const response = await axios.post(
+          "http://api.manhnv.net/v1/Employees",
+          this.employee
+        );
+        console.log(response);
+      } else {
+        const response = await axios.put(
+          "http://api.manhnv.net/v1/Employees/" + this.employee.EmployeeId,
+          this.employee
+        );
+        console.log(response);
+      }
+      await this.initEmployee();
+      console.log(this.employee);
     },
   },
 
-  data() {},
+  data() {
+    return {};
+  },
 };
 </script>

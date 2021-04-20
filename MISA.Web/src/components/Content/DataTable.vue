@@ -110,13 +110,13 @@
             <td>{{ employee.EmployeeCode }}</td>
             <td>{{ employee.FullName }}</td>
             <td>{{ employee.GenderName }}</td>
-            <td>{{ employee.DateOfBirth }}</td>
+            <td>{{ formatDate(employee.DateOfBirth) }}</td>
             <td>{{ employee.PhoneNumber }}</td>
             <td>{{ employee.Email }}</td>
             <td>{{ employee.PositionName }}</td>
             <td>{{ employee.DepartmentName }}</td>
-            <td>{{ employee.Salary }}</td>
-            <td>{{ employee.WorkStatus }}</td>
+            <td>{{ formatSalary(employee.Salary) }}</td>
+            <td>{{ statusWordString(employee.WorkStatus) }}</td>
           </tr>
         </tbody>
       </table>
@@ -167,6 +167,8 @@
       :isHide="isHideParent"
       :employee="selectedEmployee"
       :initEmployee="initEmployee"
+      :dateOfBirthFormat="dateOfBirthFormat"
+      :requestStatus="requestStatus"
     />
   </div>
 </template>
@@ -180,20 +182,67 @@ export default {
     Details,
   },
   methods: {
-    btnAddOnClick() {
+    btnAddOnClick() {      
       this.isHideParent = false;
+      this.selectedEmployee = {};
+      this.dateOfBirthFormat = '';
     },
+
     rowOnClick(employee) {
-      console.log(employee);
+      this.requestStatus = 1;
       this.selectedEmployee = employee;
+      this.dateOfBirthFormat = this.formatDateToForm(employee.DateOfBirth);
       this.isHideParent = false;
     },
+
     closePopup(value) {
       this.isHideParent = value;
     },
+
     async initEmployee() {
       const response = await axios.get("http://api.manhnv.net/v1/Employees");
       this.employees = response.data;
+    },
+
+    statusWordString(statusWord) {
+      switch (statusWord) {
+        case 0:
+          return "Đã nghỉ việc";
+        case 1:
+          return "Thực tập sinh";
+        case 2:
+          return "Đang thử việc";
+        case 3:
+          return "Nhân viên";
+      }
+    },
+
+    formatDate(dateString) {
+      if (dateString !== null) {
+        var res = dateString.split("-");
+        var year = res[0];
+        var month = res[1];
+        var day = res[2].split("T")[0];
+        return day + "/" + month + "/" + year;
+      }
+      return "";
+    },
+
+    formatSalary(salary) {
+      if (salary !== null) {
+        return salary.toLocaleString("vi-VN");
+      }
+      return "";
+    },
+     formatDateToForm(dateString) {
+      if (dateString !== null) {
+        var res = dateString.split("-");
+        var year = res[0];
+        var month = res[1];
+        var day = res[2].split("T")[0];
+        return year + "-" + month + "-" + day;
+      }
+      return "";
     },
   },
 
@@ -202,6 +251,8 @@ export default {
       employees: [],
       selectedEmployee: {},
       isHideParent: true,
+      dateOfBirthFormat: '',
+      requestStatus: 0
     };
   },
 
@@ -261,6 +312,7 @@ export default {
 .customer-filter {
   height: 50px;
   width: 100%;
+  border-bottom: 1px solid #bbbbbb;
 }
 
 .customer-filter-left {
@@ -340,11 +392,18 @@ export default {
 
 .data-table {
   position: absolute;
-  right: 24px;
-  left: 24px;
+  right: 0px;
+  left: -2px;
   bottom: 60px;
-  top: 128px;
+  top: 100px;
   overflow-y: auto;
+}
+
+.data-table th {
+  position: sticky;
+  top: -1px;
+  left: 2px;
+  background-color: white;
 }
 
 .footer-table {
