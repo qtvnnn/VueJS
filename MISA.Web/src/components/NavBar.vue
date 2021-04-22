@@ -34,11 +34,25 @@
 </template>
 
 <script>
+import $ from "jquery";
+
 export default {
   name: "NavBar",
   props: {},
+  methods: {},
 };
+
+$(document).ready(function ($) {
+  $(document).on("click", ".menu-item", function () {
+    $(this).parent().find(".active").removeClass("active");
+    $(this).addClass("active");
+  });
+});
 </script>
 
 <style scoped>
+.active {
+  background: #019160 !important;
+  color: #ffffff;
+}
 </style>

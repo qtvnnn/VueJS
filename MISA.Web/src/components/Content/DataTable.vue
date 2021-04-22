@@ -48,10 +48,13 @@
               class="dropdown-menu menu-department"
               aria-labelledby="dropdownMenuButton"
             >
-              <a class="dropdown-item" href="#">Kho tổng</a>
-              <a class="dropdown-item" href="#">Đại dương xanh</a>
-              <a class="dropdown-item" href="#">Nhà hàng biển đông</a>
-              <a class="dropdown-item" href="#">Wine house</a>
+              <a
+                class="dropdown-item"
+                v-for="department in departments"
+                :key="department.DepartmentId"
+                href="#"
+                >{{ department.DepartmentName }}</a
+              >
             </div>
           </div>
         </div>
@@ -71,10 +74,13 @@
               class="dropdown-menu menu-position"
               aria-labelledby="dropdownMenuButton"
             >
-              <a class="dropdown-item" href="#">Kho tổng</a>
-              <a class="dropdown-item" href="#">Đại dương xanh</a>
-              <a class="dropdown-item" href="#">Nhà hàng biển đông</a>
-              <a class="dropdown-item" href="#">Wine house</a>
+              <a
+                class="dropdown-item"
+                v-for="position in positions"
+                :key="position.PositionId"
+                href="#"
+                >{{ position.PositionName }}</a
+              >
             </div>
           </div>
         </div>
@@ -86,7 +92,7 @@
       </div>
     </div>
     <div class="data-table">
-      <table class="table" width="100%" border="0">
+      <table class="table table-striped table-hover" width="100%" border="0">
         <thead>
           <tr>
             <th>Mã nhân viên</th>
@@ -99,6 +105,7 @@
             <th>Phòng ban</th>
             <th>Mức lương cơ bản</th>
             <th>Tình trạng công việc</th>
+            <th></th>
           </tr>
         </thead>
         <tbody>
@@ -117,6 +124,9 @@
             <td>{{ employee.DepartmentName }}</td>
             <td>{{ formatSalary(employee.Salary) }}</td>
             <td>{{ statusWordString(employee.WorkStatus) }}</td>
+            <td>
+              <button class="btn btn-danger" v-on:click="deleteEmployee(employee.EmployeeId)"><font-awesome-icon icon="trash" /></button>
+            </td>
           </tr>
         </tbody>
       </table>
@@ -169,6 +179,8 @@
       :initEmployee="initEmployee"
       :dateOfBirthFormat="dateOfBirthFormat"
       :requestStatus="requestStatus"
+      :departments="departments"
+      :positions="positions"
     />
   </div>
 </template>
@@ -182,10 +194,10 @@ export default {
     Details,
   },
   methods: {
-    btnAddOnClick() {      
+    btnAddOnClick() {
       this.isHideParent = false;
       this.selectedEmployee = {};
-      this.dateOfBirthFormat = '';
+      this.dateOfBirthFormat = "";
     },
 
     rowOnClick(employee) {
@@ -200,8 +212,24 @@ export default {
     },
 
     async initEmployee() {
-      const response = await axios.get("http://api.manhnv.net/v1/Employees");
-      this.employees = response.data;
+      const employeesAPI = await axios.get(
+        "http://api.manhnv.net/v1/Employees"
+      );
+      const departmentAPI = await axios.get(
+        "http://api.manhnv.net/api/Department"
+      );
+      const positionAPI = await axios.get("http://api.manhnv.net/v1/Positions");
+      this.employees = employeesAPI.data;
+      this.departments = departmentAPI.data;
+      this.positions = positionAPI.data;
+    },
+
+    async deleteEmployee(employeeId){
+      const response = await axios.delete(
+          "http://api.manhnv.net/v1/Employees/" + employeeId
+        );
+        console.log(response);
+        await this.initEmployee();
     },
 
     statusWordString(statusWord) {
@@ -234,7 +262,7 @@ export default {
       }
       return "";
     },
-     formatDateToForm(dateString) {
+    formatDateToForm(dateString) {
       if (dateString !== null) {
         var res = dateString.split("-");
         var year = res[0];
@@ -249,10 +277,12 @@ export default {
   data() {
     return {
       employees: [],
+      departments: [],
+      positions: [],
       selectedEmployee: {},
       isHideParent: true,
-      dateOfBirthFormat: '',
-      requestStatus: 0
+      dateOfBirthFormat: "",
+      requestStatus: 0,
     };
   },
 
@@ -404,6 +434,10 @@ export default {
   top: -1px;
   left: 2px;
   background-color: white;
+}
+
+.data-table tr {
+  cursor: pointer;
 }
 
 .footer-table {
