@@ -274,14 +274,12 @@
                       class="form-control"
                       v-model="employee.PositionId"
                     >
-                      <option value="3700cc49-55b5-69ea-4929-a2925c0f334d">
-                        Giám đốc
-                      </option>
-                      <option value="148ed882-32b8-218e-9c20-39c2f00615e8">
-                        Nhân viên
-                      </option>
-                      <option value="25c6c36e-1668-7d10-6e09-bf1378b8dc91">
-                        Thu ngân
+                      <option
+                        v-for="position in positions"
+                        :key="position.PositionId"
+                        :value="position.PositionId"
+                      >
+                        {{ position.PositionName }}
                       </option>
                     </select>
                   </div>
@@ -297,17 +295,12 @@
                       class="form-control"
                       v-model="employee.DepartmentId"
                     >
-                      <option value="142cb08f-7c31-21fa-8e90-67245e8b283e">
-                        Phòng Marketting
-                      </option>
-                      <option value="17120d02-6ab5-3e43-18cb-66948daf6128">
-                        Phòng đào tạo
-                      </option>
-                      <option value="469b3ece-744a-45d5-957d-e8c757976496">
-                        Phòng Nhân sự
-                      </option>
-                      <option value="4e272fc4-7875-78d6-7d32-6a1673ffca7c">
-                        Phòng Công nghệ
+                      <option
+                        v-for="department in departments"
+                        :key="department.DepartmentId"
+                        :value="department.DepartmentId"
+                      >
+                        {{ department.DepartmentName }}
                       </option>
                     </select>
                   </div>
@@ -317,7 +310,8 @@
                 <div class="col">
                   <label class="label-input">Mức lương cơ bản</label>
                   <div class="input-group">
-                    <input
+                    <currency-input
+                      currency="VND"
                       class="form-control"
                       id="txtSalary"
                       fieldName="Salary"
@@ -345,18 +339,10 @@
                       class="form-control"
                       v-model="employee.WorkStatus"
                     >
-                      <option value="0">
-                        Đã nghỉ việc
-                      </option>
-                      <option value="1">
-                        Thực tập sinh
-                      </option>
-                      <option value="2">
-                        Đang thử việc
-                      </option>
-                      <option value="3">
-                        Nhân viên
-                      </option>
+                      <option value="0">Đã nghỉ việc</option>
+                      <option value="1">Thực tập sinh</option>
+                      <option value="2">Đang thử việc</option>
+                      <option value="3">Nhân viên</option>
                     </select>
                   </div>
                 </div>
@@ -390,6 +376,8 @@ export default {
     initEmployee: Function,
     dateOfBirthFormat: String,
     requestStatus: Number,
+    departments: Array,
+    positions: Array
   },
   methods: {
     btnCancelOnClick() {
@@ -417,7 +405,7 @@ export default {
   },
 
   data() {
-    return {};
+    return { value: this.employee.Salary };
   },
 };
 </script>
