@@ -100,13 +100,12 @@
   color: white;
   margin-left: 15px;
 }
+.input-warning {
+  border-color: red !important;
+}
 </style>
 <template>
   <div>
-    <!-- <button id="btnAdd" class="m-btn m-btn-default" v-on:click="btnAddOnClick">
-      <div class="m-btn-icon icon-add"></div>
-      <div class="btn-text">Thêm nhân viên</div>
-    </button> -->
     <div
       class="m-dialog dialog-detail"
       title="Thông tin nhân viên"
@@ -117,7 +116,6 @@
         <div class="dialog-header">
           <div class="dialog-header-title">THÔNG TIN NHÂN VIÊN</div>
           <div class="dialog-header-close">
-            <!-- <button v-on:click="btnCancelOnClick">x</button> -->
             <button type="button" class="close" v-on:click="btnCancelOnClick">
               <span aria-hidden="true">&times;</span>
             </button>
@@ -149,6 +147,7 @@
                       class="form-control"
                       type="text"
                       v-model="employee.EmployeeCode"
+                      disabled
                     />
                   </div>
                 </div>
@@ -160,7 +159,7 @@
                     <input
                       id="txtFullName"
                       fieldName="FullName"
-                      class="form-control"
+                      class="form-control require-not-null"
                       type="text"
                       required
                       v-model="employee.FullName"
@@ -202,7 +201,7 @@
                   </label>
                   <div class="input-group">
                     <input
-                      class="form-control"
+                      class="form-control require-not-null"
                       id="txtIdentityNumber"
                       fieldName="text"
                       type="text"
@@ -232,7 +231,7 @@
                   </label>
                   <div class="input-group">
                     <input
-                      class="form-control"
+                      class="form-control require-not-null"
                       id="txtEmail"
                       fieldName="Email"
                       type="email"
@@ -250,7 +249,7 @@
                     <input
                       id="txtPhoneNumber"
                       fieldName="FullName"
-                      class="form-control"
+                      class="form-control require-not-null"
                       type="text"
                       required
                       v-model="employee.PhoneNumber"
@@ -350,6 +349,8 @@
             </div>
           </div>
         </div>
+           <input class="form-control" @change="isEmailValid" v-model="email" type="email" />
+               <span v-show="wrongEmail" style="color:red">Incorrect email address</span>
         <div class="dialog-footer">
           <button
             id="btnCancel"
@@ -369,6 +370,7 @@
 
 <script>
 import * as axios from "axios";
+import $ from "jquery";
 export default {
   props: {
     isHide: Boolean,
@@ -377,35 +379,89 @@ export default {
     dateOfBirthFormat: String,
     requestStatus: Number,
     departments: Array,
-    positions: Array
+    positions: Array,
+    newEmployeeCode: String,
   },
   methods: {
     btnCancelOnClick() {
       this.$emit("closePopup", true);
+      removeWarningEmpty();
     },
     async saveEmployee() {
-      this.$emit("closePopup", true);
-      this.employee.DateOfBirth = this.dateOfBirthFormat;
-      if (this.requestStatus == 0) {
-        const response = await axios.post(
-          "http://api.manhnv.net/v1/Employees",
-          this.employee
-        );
-        console.log(response);
+      var count = countEmpty();
+      if (count === 0) {
+        this.$emit("closePopup", true);
+        this.employee.DateOfBirth = this.dateOfBirthFormat;
+        if (this.requestStatus == 0) {
+          this.employee.EmployeeCode = this.newEmployeeCode;
+          const response = await axios.post(
+            "http://api.manhnv.net/v1/Employees",
+            this.employee
+          );
+          console.log(response);
+        } else {
+          const response = await axios.put(
+            "http://api.manhnv.net/v1/Employees/" + this.employee.EmployeeId,
+            this.employee
+          );
+          console.log(response);
+        }
+        await this.initEmployee();
+        console.log(this.employee);
       } else {
-        const response = await axios.put(
-          "http://api.manhnv.net/v1/Employees/" + this.employee.EmployeeId,
-          this.employee
-        );
-        console.log(response);
+        warningEmpty();
       }
-      await this.initEmployee();
-      console.log(this.employee);
     },
+    isEmailValid() {
+      if (emailRe.test(this.email)) {
+        this.wrongEmail = false;
+      } else {
+        this.wrongEmail = true;
+      }
+    }
   },
 
   data() {
-    return { value: this.employee.Salary };
+    return {
+      email: "",
+      wrongEmail: false
+    };
   },
 };
+
+$(document).ready(function () {
+  $(".require-not-null").blur(function () {
+    if (!$(this).val()) {
+      $(this).addClass("input-warning");
+    } else {
+      $(this).removeClass("input-warning");
+    }
+  });
+});
+
+function countEmpty() {
+  let count = 0;
+  $(document)
+    .find(".require-not-null")
+    .each(function () {
+      if (!$(this).val()) {
+        count++;
+      }
+    });
+  return count;
+}
+function warningEmpty() {
+  $(".dialog-detail")
+    .find(".require-not-null")
+    .each(function () {
+      if (!$(this).val()) {
+        $(this).addClass("input-warning");
+      }
+    });
+}
+function removeWarningEmpty() {
+  $(document).find(".input-warning").removeClass("input-warning");
+}
+
+const emailRe = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 </script>

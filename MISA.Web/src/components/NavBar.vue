@@ -21,7 +21,7 @@
         <div class="icon list-customer"></div>
         <div class="item-name">Danh mục khách hàng</div>
       </div>
-      <div class="menu-item">
+      <div class="menu-item active">
         <div class="icon list-employee"></div>
         <div class="item-name">Danh mục nhân viên</div>
       </div>
