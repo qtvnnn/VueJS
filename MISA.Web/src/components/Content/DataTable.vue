@@ -124,8 +124,13 @@
             <td>{{ employee.DepartmentName }}</td>
             <td>{{ formatSalary(employee.Salary) }}</td>
             <td>{{ statusWordString(employee.WorkStatus) }}</td>
-            <td>
-              <button class="btn btn-danger" v-on:click="deleteEmployee(employee.EmployeeId)"><font-awesome-icon icon="trash" /></button>
+            <td class="btn-delete-employee">
+              <button
+                class="btn btn-danger btn-sm"
+                v-on:click="deleteEmployee(employee.EmployeeId)"
+              >
+                <font-awesome-icon icon="trash" size="xs" />
+              </button>
             </td>
           </tr>
         </tbody>
@@ -181,6 +186,7 @@
       :requestStatus="requestStatus"
       :departments="departments"
       :positions="positions"
+      :newEmployeeCode="newEmployeeCode"
     />
   </div>
 </template>
@@ -195,9 +201,11 @@ export default {
   },
   methods: {
     btnAddOnClick() {
+      this.requestStatus = 0;
       this.isHideParent = false;
       this.selectedEmployee = {};
       this.dateOfBirthFormat = "";
+      this.getNewEmployeeCode();
     },
 
     rowOnClick(employee) {
@@ -205,6 +213,7 @@ export default {
       this.selectedEmployee = employee;
       this.dateOfBirthFormat = this.formatDateToForm(employee.DateOfBirth);
       this.isHideParent = false;
+      this.getNewEmployeeCode();
     },
 
     closePopup(value) {
@@ -224,12 +233,19 @@ export default {
       this.positions = positionAPI.data;
     },
 
-    async deleteEmployee(employeeId){
+    async deleteEmployee(employeeId) {
       const response = await axios.delete(
-          "http://api.manhnv.net/v1/Employees/" + employeeId
-        );
-        console.log(response);
-        await this.initEmployee();
+        "http://api.manhnv.net/v1/Employees/" + employeeId
+      );
+      console.log(response);
+      await this.initEmployee();
+    },
+
+    async getNewEmployeeCode() {
+      const newEmployeeCodeAPI = await axios.get(
+        "http://api.manhnv.net/v1/Employees/NewEmployeeCode"
+      );
+      this.newEmployeeCode = newEmployeeCodeAPI.data;
     },
 
     statusWordString(statusWord) {
@@ -283,6 +299,7 @@ export default {
       isHideParent: true,
       dateOfBirthFormat: "",
       requestStatus: 0,
+      newEmployeeCode: "",
     };
   },
 
@@ -438,6 +455,10 @@ export default {
 
 .data-table tr {
   cursor: pointer;
+}
+
+.btn-delete-employee {
+  padding: 5px 0px 0px 0px;
 }
 
 .footer-table {
