@@ -103,6 +103,27 @@
 .input-warning {
   border-color: red !important;
 }
+
+.dropdown-menu-gender {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  z-index: 1000;
+  display: none;
+  float: left;
+  min-width: 17.5rem;
+  padding: 0.5rem 0;
+  margin: 0.125rem 0 0;
+  font-size: 1rem;
+  color: #212529;
+  text-align: left;
+  list-style: none;
+  background-color: #fff;
+  background-clip: padding-box;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  border-radius: 0.25rem;
+}
+
 </style>
 <template>
   <div>
@@ -349,8 +370,36 @@
             </div>
           </div>
         </div>
-           <input class="form-control" @change="isEmailValid" v-model="email" type="email" />
-               <span v-show="wrongEmail" style="color:red">Incorrect email address</span>
+        <input
+          class="form-control"
+          @change="isEmailValid"
+          v-model="email"
+          type="email"
+        />
+        <span v-show="wrongEmail" style="color: red"
+          >Incorrect email address</span
+        >
+
+        <div class="dropdown">
+          <div class="input-group" id="dropdown-gender">
+            <input
+              class="btn btn-default "
+              type="text"
+              title=""
+            />
+            <div class="input-group-append">
+              <span class="input-group-text"
+                ><font-awesome-icon icon="chevron-down"
+              /></span>
+            </div>
+          </div>
+          <div class="dropdown-menu-gender">
+            <input class="dropdown-item" href="#" type="button" value="0" />
+            <input class="dropdown-item" href="#" type="button" value="1" />
+            <input class="dropdown-item" href="#" type="button" value="-1" />
+          </div>
+        </div>
+
         <div class="dialog-footer">
           <button
             id="btnCancel"
@@ -418,13 +467,13 @@ export default {
       } else {
         this.wrongEmail = true;
       }
-    }
+    },
   },
 
   data() {
     return {
       email: "",
-      wrongEmail: false
+      wrongEmail: false,
     };
   },
 };
@@ -464,4 +513,10 @@ function removeWarningEmpty() {
 }
 
 const emailRe = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+
+$(function () {
+  $.fn.getValue = function () {
+    $(this).val();
+  };
+});
 </script>
