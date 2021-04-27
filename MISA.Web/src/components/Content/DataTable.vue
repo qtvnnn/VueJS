@@ -30,6 +30,7 @@
             placeholder="Tìm kiếm nhân viên"
             aria-label="Username"
             aria-describedby="basic-addon1"
+            v-on:change="filterInput($event)"
           />
         </div>
         <div class="select-filter-department">
@@ -144,13 +145,11 @@
         </div>
         <div class="col-sm footer-table-center">
           <div class="paging-left">
-            <a class="btn btn-paging-first" href="#" role="button"
-              >&#60;&#60;
-              <!-- <i class="fa fa-angle-double-left icon-paging-first" aria-hidden="true"></i> -->
+            <a class="btn btn-paging-first" href="#" role="button">
+              <font-awesome-icon icon="angle-double-left" />
             </a>
-            <a class="btn btn-paging-pre" href="#" role="button"
-              >&#60;
-              <!-- <i class="fa fa-chevron-left icon-paging-previous" aria-hidden="true"></i> -->
+            <a class="btn btn-paging-pre" href="#" role="button">
+              <font-awesome-icon icon="angle-left" />
             </a>
           </div>
           <div class="paging-number">
@@ -162,13 +161,11 @@
             <a class="btn btn-paging-number-item" href="#" role="button">4</a>
           </div>
           <div class="paging-right">
-            <a class="btn btn-paging-next" href="#" role="button"
-              >&#62;
-              <!-- <i class="fa fa-chevron-right icon-paging-next" aria-hidden="true"></i> -->
+            <a class="btn btn-paging-next" href="#" role="button">
+              <font-awesome-icon icon="angle-right" />
             </a>
-            <a class="btn btn-paging-last" href="#" role="button"
-              >&#62;&#62;
-              <!-- <i class="fa fa-angle-double-right  icon-paging-last" aria-hidden="true"></i> -->
+            <a class="btn btn-paging-last" href="#" role="button">
+              <font-awesome-icon icon="angle-double-right" />
             </a>
           </div>
         </div>
@@ -229,16 +226,28 @@ export default {
       );
       const positionAPI = await axios.get("http://api.manhnv.net/v1/Positions");
       this.employees = employeesAPI.data;
+      console.log(employeesAPI.data);
       this.departments = departmentAPI.data;
       this.positions = positionAPI.data;
     },
 
     async deleteEmployee(employeeId) {
-      const response = await axios.delete(
-        "http://api.manhnv.net/v1/Employees/" + employeeId
-      );
-      console.log(response);
-      await this.initEmployee();
+      this.$confirm({
+        message: `Bạn có chắc muốn xóa bản ghi này?`,
+        button: {
+          no: "Không",
+          yes: "Có",
+        },
+        callback: async (confirm) => {
+          if (confirm) {
+            const response = await axios.delete(
+              "http://api.manhnv.net/v1/Employees/" + employeeId
+            );
+            console.log(response);
+            await this.initEmployee();
+          }
+        },
+      });
     },
 
     async getNewEmployeeCode() {
@@ -246,6 +255,14 @@ export default {
         "http://api.manhnv.net/v1/Employees/NewEmployeeCode"
       );
       this.newEmployeeCode = newEmployeeCodeAPI.data;
+    },
+
+    async getDataFilter(valueInput) {
+      const employeesAPI = await axios.get(
+        `http://api.manhnv.net/v1/Employees/employeeFilter?pageSize=100&employeeFilter=${valueInput}`
+      );
+      this.employees = employeesAPI.data.Data;
+      console.log(employeesAPI.data.Data);
     },
 
     statusWordString(statusWord) {
@@ -260,7 +277,6 @@ export default {
           return "Nhân viên";
       }
     },
-
     formatDate(dateString) {
       if (dateString !== null) {
         var res = dateString.split("-");
@@ -271,7 +287,6 @@ export default {
       }
       return "";
     },
-
     formatSalary(salary) {
       if (salary !== null) {
         return salary.toLocaleString("vi-VN");
@@ -287,6 +302,16 @@ export default {
         return year + "-" + month + "-" + day;
       }
       return "";
+    },
+
+    async filterInput(txtInput) {
+      let valueInput = txtInput.target.value;
+      console.log(valueInput);
+      if (valueInput) {
+        await this.getDataFilter(valueInput);
+      } else {
+        await this.initEmployee();
+      }
     },
   },
 
@@ -439,7 +464,7 @@ export default {
 
 .data-table {
   position: absolute;
-  right: 0px;
+  right: 4px;
   left: -2px;
   bottom: 60px;
   top: 100px;
@@ -489,6 +514,10 @@ export default {
   background-color: #e9ebee;
   color: #6c757d;
   border-radius: 50%;
+  height: 34px;
+  padding-left: 11px;
+  padding-top: 5px;
+  margin: 4px;
 }
 
 .footer-table-center .paging-number .active {

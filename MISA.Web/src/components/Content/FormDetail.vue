@@ -40,7 +40,7 @@
   width: 750px;
   background-color: #fff;
   left: calc(50% - 325px);
-  top: calc(50% - 450px);
+  top: calc(50% - 340px);
 }
 .dialog-body {
   padding: 16px 16px 16px 16px;
@@ -94,7 +94,6 @@
 .hr-group-label {
   margin: 0px;
 }
-
 .btn-save-form {
   background-color: #01b075;
   color: white;
@@ -103,27 +102,16 @@
 .input-warning {
   border-color: red !important;
 }
-
-.dropdown-menu-gender {
-  position: absolute;
-  top: 100%;
-  left: 0;
-  z-index: 1000;
+.alertToggle {
   display: none;
-  float: left;
-  min-width: 17.5rem;
-  padding: 0.5rem 0;
-  margin: 0.125rem 0 0;
-  font-size: 1rem;
-  color: #212529;
-  text-align: left;
-  list-style: none;
-  background-color: #fff;
-  background-clip: padding-box;
-  border: 1px solid rgba(0, 0, 0, 0.15);
-  border-radius: 0.25rem;
+  align-items: center;
+  float: right;
+  right: 16px;
+  top: -22px;
 }
-
+.textAlert {
+  margin-right: 20px;
+}
 </style>
 <template>
   <div>
@@ -133,6 +121,10 @@
       :class="{ isHide: isHide }"
     >
       <div class="dialog-modal"></div>
+      <div class="alert alert-danger alertToggle" id="alert">
+        <span class="textAlert">data was saved</span>
+        <a href="#" class="close" data-dismiss="alert">&times;</a>
+      </div>
       <div class="dialog-content">
         <div class="dialog-header">
           <div class="dialog-header-title">THÔNG TIN NHÂN VIÊN</div>
@@ -244,7 +236,6 @@
                   </div>
                 </div>
               </div>
-
               <div class="row">
                 <div class="col">
                   <label class="label-input">
@@ -370,35 +361,6 @@
             </div>
           </div>
         </div>
-        <input
-          class="form-control"
-          @change="isEmailValid"
-          v-model="email"
-          type="email"
-        />
-        <span v-show="wrongEmail" style="color: red"
-          >Incorrect email address</span
-        >
-
-        <div class="dropdown">
-          <div class="input-group" id="dropdown-gender">
-            <input
-              class="btn btn-default "
-              type="text"
-              title=""
-            />
-            <div class="input-group-append">
-              <span class="input-group-text"
-                ><font-awesome-icon icon="chevron-down"
-              /></span>
-            </div>
-          </div>
-          <div class="dropdown-menu-gender">
-            <input class="dropdown-item" href="#" type="button" value="0" />
-            <input class="dropdown-item" href="#" type="button" value="1" />
-            <input class="dropdown-item" href="#" type="button" value="-1" />
-          </div>
-        </div>
 
         <div class="dialog-footer">
           <button
@@ -448,42 +410,60 @@ export default {
             this.employee
           );
           console.log(response);
+          alert('Thêm mới nhân viên thành công');
         } else {
           const response = await axios.put(
             "http://api.manhnv.net/v1/Employees/" + this.employee.EmployeeId,
             this.employee
           );
           console.log(response);
+          alert('Cập nhật thông tin nhân viên thành công');
         }
         await this.initEmployee();
         console.log(this.employee);
       } else {
         warningEmpty();
-      }
-    },
-    isEmailValid() {
-      if (emailRe.test(this.email)) {
-        this.wrongEmail = false;
-      } else {
-        this.wrongEmail = true;
+        showAlert("Vui lòng điền đẩy đủ thông tin quan trọng!");
       }
     },
   },
 
   data() {
-    return {
-      email: "",
-      wrongEmail: false,
-    };
+    return {};
   },
 };
 
 $(document).ready(function () {
-  $(".require-not-null").blur(function () {
+  $(document).on("blur", "#txtFullName", function () {
     if (!$(this).val()) {
       $(this).addClass("input-warning");
+      showAlert("Vui lòng điền họ tên!");
     } else {
       $(this).removeClass("input-warning");
+    }
+  });
+  $(document).on("blur", "#txtEmail", function () {
+    if (isEmailValidate($(this).val())) {
+      $(this).removeClass("input-warning");
+    } else {
+      $(this).addClass("input-warning");
+      showAlert("Vui lòng điền Email hợp lệ!");
+    }
+  });
+  $(document).on("blur", "#txtPhoneNumber", function () {
+    if (isPhoneNumberValidate($(this).val())) {
+      $(this).removeClass("input-warning");
+    } else {
+      $(this).addClass("input-warning");
+      showAlert("Vui lòng điền số điện thoại hợp lệ!");
+    }
+  });
+  $(document).on("blur", "#txtIdentityNumber", function () {
+    if (isIdentityNumberValidate($(this).val())) {
+      $(this).removeClass("input-warning");
+    } else {
+      $(this).addClass("input-warning");
+      showAlert("Vui lòng điền số CMND không hợp lệ!");
     }
   });
 });
@@ -513,10 +493,32 @@ function removeWarningEmpty() {
 }
 
 const emailRe = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+const phoneNo = /^\d{10}$/;
+const IdenNo = /^\d{9,12}$/;
 
-$(function () {
-  $.fn.getValue = function () {
-    $(this).val();
-  };
-});
+function isEmailValidate(email) {
+  if (!emailRe.test(email)) {
+    return false;
+  } else {
+    return true;
+  }
+}
+function isPhoneNumberValidate(phone) {
+  if (!phoneNo.test(phone)) {
+    return false;
+  } else {
+    return true;
+  }
+}
+function isIdentityNumberValidate(Identity) {
+  if (!IdenNo.test(Identity)) {
+    return false;
+  } else {
+    return true;
+  }
+}
+function showAlert(alert) {
+  $(".textAlert").text(alert);
+  $("#alert").css("display", "flex").delay(2000).fadeOut("slow");
+}
 </script>
