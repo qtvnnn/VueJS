@@ -1,5 +1,6 @@
 <template>
   <div id="app">
+    <vue-confirm-dialog></vue-confirm-dialog>
     <div class="body-left">
       <NavBar />
     </div>

@@ -40,7 +40,7 @@
   width: 750px;
   background-color: #fff;
   left: calc(50% - 325px);
-  top: calc(50% - 450px);
+  top: calc(50% - 340px);
 }
 .dialog-body {
   padding: 16px 16px 16px 16px;
@@ -94,7 +94,6 @@
 .hr-group-label {
   margin: 0px;
 }
-
 .btn-save-form {
   background-color: #01b075;
   color: white;
@@ -102,6 +101,16 @@
 }
 .input-warning {
   border-color: red !important;
+}
+.alertToggle {
+  display: none;
+  align-items: center;
+  float: right;
+  right: 16px;
+  top: -22px;
+}
+.textAlert {
+  margin-right: 20px;
 }
 </style>
 <template>
@@ -112,6 +121,10 @@
       :class="{ isHide: isHide }"
     >
       <div class="dialog-modal"></div>
+      <div class="alert alert-danger alertToggle" id="alert">
+        <span class="textAlert">data was saved</span>
+        <a href="#" class="close" data-dismiss="alert">&times;</a>
+      </div>
       <div class="dialog-content">
         <div class="dialog-header">
           <div class="dialog-header-title">THÔNG TIN NHÂN VIÊN</div>
@@ -223,7 +236,6 @@
                   </div>
                 </div>
               </div>
-
               <div class="row">
                 <div class="col">
                   <label class="label-input">
@@ -349,8 +361,7 @@
             </div>
           </div>
         </div>
-           <input class="form-control" @change="isEmailValid" v-model="email" type="email" />
-               <span v-show="wrongEmail" style="color:red">Incorrect email address</span>
+
         <div class="dialog-footer">
           <button
             id="btnCancel"
@@ -399,42 +410,60 @@ export default {
             this.employee
           );
           console.log(response);
+          alert('Thêm mới nhân viên thành công');
         } else {
           const response = await axios.put(
             "http://api.manhnv.net/v1/Employees/" + this.employee.EmployeeId,
             this.employee
           );
           console.log(response);
+          alert('Cập nhật thông tin nhân viên thành công');
         }
         await this.initEmployee();
         console.log(this.employee);
       } else {
         warningEmpty();
+        showAlert("Vui lòng điền đẩy đủ thông tin quan trọng!");
       }
     },
-    isEmailValid() {
-      if (emailRe.test(this.email)) {
-        this.wrongEmail = false;
-      } else {
-        this.wrongEmail = true;
-      }
-    }
   },
 
   data() {
-    return {
-      email: "",
-      wrongEmail: false
-    };
+    return {};
   },
 };
 
 $(document).ready(function () {
-  $(".require-not-null").blur(function () {
+  $(document).on("blur", "#txtFullName", function () {
     if (!$(this).val()) {
       $(this).addClass("input-warning");
+      showAlert("Vui lòng điền họ tên!");
     } else {
       $(this).removeClass("input-warning");
+    }
+  });
+  $(document).on("blur", "#txtEmail", function () {
+    if (isEmailValidate($(this).val())) {
+      $(this).removeClass("input-warning");
+    } else {
+      $(this).addClass("input-warning");
+      showAlert("Vui lòng điền Email hợp lệ!");
+    }
+  });
+  $(document).on("blur", "#txtPhoneNumber", function () {
+    if (isPhoneNumberValidate($(this).val())) {
+      $(this).removeClass("input-warning");
+    } else {
+      $(this).addClass("input-warning");
+      showAlert("Vui lòng điền số điện thoại hợp lệ!");
+    }
+  });
+  $(document).on("blur", "#txtIdentityNumber", function () {
+    if (isIdentityNumberValidate($(this).val())) {
+      $(this).removeClass("input-warning");
+    } else {
+      $(this).addClass("input-warning");
+      showAlert("Vui lòng điền số CMND không hợp lệ!");
     }
   });
 });
@@ -464,4 +493,32 @@ function removeWarningEmpty() {
 }
 
 const emailRe = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+const phoneNo = /^\d{10}$/;
+const IdenNo = /^\d{9,12}$/;
+
+function isEmailValidate(email) {
+  if (!emailRe.test(email)) {
+    return false;
+  } else {
+    return true;
+  }
+}
+function isPhoneNumberValidate(phone) {
+  if (!phoneNo.test(phone)) {
+    return false;
+  } else {
+    return true;
+  }
+}
+function isIdentityNumberValidate(Identity) {
+  if (!IdenNo.test(Identity)) {
+    return false;
+  } else {
+    return true;
+  }
+}
+function showAlert(alert) {
+  $(".textAlert").text(alert);
+  $("#alert").css("display", "flex").delay(2000).fadeOut("slow");
+}
 </script>
