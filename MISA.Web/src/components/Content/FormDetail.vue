@@ -390,7 +390,6 @@ export default {
     requestStatus: Number,
     departments: Array,
     positions: Array,
-    newEmployeeCode: String,
   },
   methods: {
     btnCancelOnClick() {
@@ -402,7 +401,6 @@ export default {
       if (count === 0) {
         this.$emit("closePopup", true);
         if (this.requestStatus == 0) {
-          this.employee.EmployeeCode = this.newEmployeeCode;
           const response = await axios.post(
             "http://api.manhnv.net/v1/Employees",
             this.employee
@@ -474,6 +472,7 @@ function countEmpty() {
         count++;
       }
     });
+    
   return count;
 }
 function warningEmpty() {

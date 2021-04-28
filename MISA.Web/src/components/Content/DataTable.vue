@@ -182,7 +182,6 @@
       :requestStatus="requestStatus"
       :departments="departments"
       :positions="positions"
-      :newEmployeeCode="newEmployeeCode"
     />
   </div>
 </template>
@@ -196,11 +195,14 @@ export default {
     Details,
   },
   methods: {
-    btnAddOnClick() {
+    async btnAddOnClick() {
       this.requestStatus = 0;
       this.isHideParent = false;
-      // this.selectedEmployee = {};
-      this.getNewEmployeeCode();
+      this.selectedEmployee = {};
+      this.selectedEmployee = {
+        EmployeeCode: await this.getNewEmployeeCode(),
+      };
+      console.log(this.selectedEmployee.EmployeeCode);
     },
 
     rowOnClick(employee) {
@@ -252,8 +254,7 @@ export default {
       const newEmployeeCodeAPI = await axios.get(
         "http://api.manhnv.net/v1/Employees/NewEmployeeCode"
       );
-      this.newEmployeeCode = newEmployeeCodeAPI.data;
-
+      return newEmployeeCodeAPI.data;
     },
 
     async getDataFilter(valueInput) {
@@ -320,7 +321,6 @@ export default {
       selectedEmployee: {},
       isHideParent: true,
       requestStatus: 0,
-      newEmployeeCode: "",
     };
   },
 
