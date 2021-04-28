@@ -350,7 +350,7 @@
                       class="form-control"
                       v-model="employee.WorkStatus"
                     >
-                      <option value="0">Đã nghỉ việc</option>
+                      <option value="0" selected>Đã nghỉ việc</option>
                       <option value="1">Thực tập sinh</option>
                       <option value="2">Đang thử việc</option>
                       <option value="3">Nhân viên</option>
@@ -406,14 +406,14 @@ export default {
             this.employee
           );
           console.log(response);
-          alert('Thêm mới nhân viên thành công');
+          alert("Thêm mới nhân viên thành công");
         } else {
           const response = await axios.put(
             "http://api.manhnv.net/v1/Employees/" + this.employee.EmployeeId,
             this.employee
           );
           console.log(response);
-          alert('Cập nhật thông tin nhân viên thành công');
+          alert("Cập nhật thông tin nhân viên thành công");
         }
         await this.initEmployee();
       } else {
@@ -472,7 +472,15 @@ function countEmpty() {
         count++;
       }
     });
-    
+  if (!isEmailValidate($("#txtEmail").val())) {
+    count++;
+  }
+  if (!isPhoneNumberValidate($("#txtPhoneNumber").val())) {
+    count++;
+  }
+  if (!isIdentityNumberValidate($("#txtIdentityNumber").val())) {
+    count++;
+  }
   return count;
 }
 function warningEmpty() {

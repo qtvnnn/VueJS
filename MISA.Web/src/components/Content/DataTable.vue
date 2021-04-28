@@ -201,6 +201,10 @@ export default {
       this.selectedEmployee = {};
       this.selectedEmployee = {
         EmployeeCode: await this.getNewEmployeeCode(),
+        WorkStatus: 0,
+        Gender: 1,
+        DepartmentId: "142cb08f-7c31-21fa-8e90-67245e8b283e",
+        PositionId: "148ed882-32b8-218e-9c20-39c2f00615e8",
       };
       console.log(this.selectedEmployee.EmployeeCode);
     },
