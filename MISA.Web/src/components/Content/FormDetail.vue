@@ -188,7 +188,7 @@
                       id="dtDateOfBirth"
                       class="form-control"
                       type="date"
-                      v-model="dateOfBirthFormat"
+                      v-model="employee.DateOfBirth"
                     />
                   </div>
                 </div>
@@ -387,7 +387,6 @@ export default {
     isHide: Boolean,
     employee: Object,
     initEmployee: Function,
-    dateOfBirthFormat: String,
     requestStatus: Number,
     departments: Array,
     positions: Array,
@@ -402,7 +401,6 @@ export default {
       var count = countEmpty();
       if (count === 0) {
         this.$emit("closePopup", true);
-        this.employee.DateOfBirth = this.dateOfBirthFormat;
         if (this.requestStatus == 0) {
           this.employee.EmployeeCode = this.newEmployeeCode;
           const response = await axios.post(
@@ -420,7 +418,6 @@ export default {
           alert('Cập nhật thông tin nhân viên thành công');
         }
         await this.initEmployee();
-        console.log(this.employee);
       } else {
         warningEmpty();
         showAlert("Vui lòng điền đẩy đủ thông tin quan trọng!");

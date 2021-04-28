@@ -179,7 +179,6 @@
       :isHide="isHideParent"
       :employee="selectedEmployee"
       :initEmployee="initEmployee"
-      :dateOfBirthFormat="dateOfBirthFormat"
       :requestStatus="requestStatus"
       :departments="departments"
       :positions="positions"
@@ -201,16 +200,16 @@ export default {
       this.requestStatus = 0;
       this.isHideParent = false;
       this.selectedEmployee = {};
-      this.dateOfBirthFormat = "";
       this.getNewEmployeeCode();
     },
 
     rowOnClick(employee) {
+      if (employee.DateOfBirth != null) {
+        employee.DateOfBirth = this.formatDateToForm(employee.DateOfBirth);
+      }
       this.requestStatus = 1;
       this.selectedEmployee = employee;
-      this.dateOfBirthFormat = this.formatDateToForm(employee.DateOfBirth);
       this.isHideParent = false;
-      this.getNewEmployeeCode();
     },
 
     closePopup(value) {
@@ -226,7 +225,6 @@ export default {
       );
       const positionAPI = await axios.get("http://api.manhnv.net/v1/Positions");
       this.employees = employeesAPI.data;
-      console.log(employeesAPI.data);
       this.departments = departmentAPI.data;
       this.positions = positionAPI.data;
     },
@@ -262,7 +260,6 @@ export default {
         `http://api.manhnv.net/v1/Employees/employeeFilter?pageSize=100&employeeFilter=${valueInput}`
       );
       this.employees = employeesAPI.data.Data;
-      console.log(employeesAPI.data.Data);
     },
 
     statusWordString(statusWord) {
@@ -306,7 +303,6 @@ export default {
 
     async filterInput(txtInput) {
       let valueInput = txtInput.target.value;
-      console.log(valueInput);
       if (valueInput) {
         await this.getDataFilter(valueInput);
       } else {
@@ -322,7 +318,6 @@ export default {
       positions: [],
       selectedEmployee: {},
       isHideParent: true,
-      dateOfBirthFormat: "",
       requestStatus: 0,
       newEmployeeCode: "",
     };
