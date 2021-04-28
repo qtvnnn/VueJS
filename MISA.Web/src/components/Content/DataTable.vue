@@ -199,7 +199,7 @@ export default {
     btnAddOnClick() {
       this.requestStatus = 0;
       this.isHideParent = false;
-      this.selectedEmployee = {};
+      // this.selectedEmployee = {};
       this.getNewEmployeeCode();
     },
 
@@ -253,6 +253,7 @@ export default {
         "http://api.manhnv.net/v1/Employees/NewEmployeeCode"
       );
       this.newEmployeeCode = newEmployeeCodeAPI.data;
+
     },
 
     async getDataFilter(valueInput) {
