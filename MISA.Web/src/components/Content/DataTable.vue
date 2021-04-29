@@ -1,5 +1,6 @@
 <template>
   <div class="content">
+    <BaseLoading :showLoading="isLoading" />
     <div class="content-header">
       <div class="content-header-left">
         <span class="menu-item-selected">Danh sách nhân viên</span>
@@ -14,6 +15,11 @@
           <div class="icon icon-add-employee"></div>
           <div class="item-name">Thêm nhân viên</div>
         </a>
+
+        <div class="alert alert-success alertToggleData" id="alert">
+          <span class="textAlertData">data was saved</span>
+          <a href="#" class="close" data-dismiss="alert">&times;</a>
+        </div>
       </div>
     </div>
     <div class="customer-filter">
@@ -30,7 +36,7 @@
             placeholder="Tìm kiếm nhân viên"
             aria-label="Username"
             aria-describedby="basic-addon1"
-            v-on:change="filterInput($event)"
+            v-on:keyup.13="filterInput($event)"
           />
         </div>
         <div class="select-filter-department">
@@ -38,7 +44,7 @@
             <button
               class="btn btn-default dropdown-toggle btn-select btn-list-department"
               type="button"
-              id="dropdownMenuButton"
+              id="dropdownMenuButtonDepartment"
               data-toggle="dropdown"
               aria-haspopup="true"
               aria-expanded="false"
@@ -47,12 +53,16 @@
             </button>
             <div
               class="dropdown-menu menu-department"
-              aria-labelledby="dropdownMenuButton"
+              aria-labelledby="dropdownMenuButtonDepartment"
             >
               <a
-                class="dropdown-item"
+                class="dropdown-item selectDepartment"
                 v-for="department in departments"
                 :key="department.DepartmentId"
+                :id="department.DepartmentId"
+                v-on:click="
+                  OnClick(department.DepartmentName, department.DepartmentId)
+                "
                 href="#"
                 >{{ department.DepartmentName }}</a
               >
@@ -76,9 +86,10 @@
               aria-labelledby="dropdownMenuButton"
             >
               <a
-                class="dropdown-item"
+                class="dropdown-item selectPosition"
                 v-for="position in positions"
                 :key="position.PositionId"
+                :id="position.PositionId"
                 href="#"
                 >{{ position.PositionName }}</a
               >
@@ -87,7 +98,7 @@
         </div>
       </div>
       <div class="customer-filter-right">
-        <a class="btn btn-reset-filter" href="#" role="button">
+        <a class="btn btn-reset-filter" href="#" v-on:click="btnResetTable">
           <div class="icon icon-reset-filter"></div>
         </a>
       </div>
@@ -119,18 +130,20 @@
             <td>{{ employee.FullName }}</td>
             <td>{{ employee.GenderName }}</td>
             <td>{{ formatDate(employee.DateOfBirth) }}</td>
-            <td>{{ employee.PhoneNumber }}</td>
+            <td style="float: right">{{ employee.PhoneNumber }}</td>
             <td>{{ employee.Email }}</td>
             <td>{{ employee.PositionName }}</td>
             <td>{{ employee.DepartmentName }}</td>
-            <td>{{ formatSalary(employee.Salary) }}</td>
+            <td style="float: right">
+              {{ formatSalary(employee.Salary) }}
+            </td>
             <td>{{ statusWordString(employee.WorkStatus) }}</td>
             <td class="btn-delete-employee">
               <button
                 class="btn btn-danger btn-sm"
                 v-on:click="deleteEmployee(employee.EmployeeId)"
               >
-                <font-awesome-icon icon="trash" size="xs" />
+                <font-awesome-icon icon="trash" />
               </button>
             </td>
           </tr>
@@ -179,6 +192,7 @@
       :isHide="isHideParent"
       :employee="selectedEmployee"
       :initEmployee="initEmployee"
+      :showAlertData="showAlertData"
       :requestStatus="requestStatus"
       :departments="departments"
       :positions="positions"
@@ -188,13 +202,22 @@
 
 <script>
 import * as axios from "axios";
+import $ from "jquery";
 import Details from "./FormDetail.vue";
+import BaseLoading from "../../components/base/BaseLoading";
 export default {
   name: "Content",
   components: {
     Details,
+    BaseLoading,
   },
   methods: {
+    // sự kiện click làm mới dữ liệu trong table
+    async btnResetTable() {
+      await this.initEmployee();
+    },
+
+    // sự kiện click hiện dialog form input để thêm mới nhân viên
     async btnAddOnClick() {
       this.requestStatus = 0;
       this.isHideParent = false;
@@ -209,6 +232,7 @@ export default {
       console.log(this.selectedEmployee.EmployeeCode);
     },
 
+    // sự kiện ấn đúp chuột để hiện thông tin chi tiết một nhân viên trên dialog input form
     rowOnClick(employee) {
       if (employee.DateOfBirth != null) {
         employee.DateOfBirth = this.formatDateToForm(employee.DateOfBirth);
@@ -218,23 +242,32 @@ export default {
       this.isHideParent = false;
     },
 
-    closePopup(value) {
+    // thay đổi trạng thái đóng mở dialog input form
+    async closePopup(value) {
       this.isHideParent = value;
     },
 
+    // gọi api load dữ liệu
     async initEmployee() {
+      this.isLoading = true;
+      // get all employee
       const employeesAPI = await axios.get(
         "http://api.manhnv.net/v1/Employees"
       );
+      // get all department
       const departmentAPI = await axios.get(
         "http://api.manhnv.net/api/Department"
       );
+      // get all position
       const positionAPI = await axios.get("http://api.manhnv.net/v1/Positions");
       this.employees = employeesAPI.data;
       this.departments = departmentAPI.data;
       this.positions = positionAPI.data;
+
+      this.isLoading = false;
     },
 
+    // sự kiện gọi api xóa một bản ghi nhân viên
     async deleteEmployee(employeeId) {
       this.$confirm({
         message: `Bạn có chắc muốn xóa bản ghi này?`,
@@ -249,11 +282,13 @@ export default {
             );
             console.log(response);
             await this.initEmployee();
+            this.showAlertData("Xóa một bản ghi nhân viên thành công");
           }
         },
       });
     },
 
+    // gọi api lấy mã nhân viên mới
     async getNewEmployeeCode() {
       const newEmployeeCodeAPI = await axios.get(
         "http://api.manhnv.net/v1/Employees/NewEmployeeCode"
@@ -261,13 +296,19 @@ export default {
       return newEmployeeCodeAPI.data;
     },
 
+    // gọi api filter để tìm kiếm nhân viên theo tên, mã nhân viên, sđt
     async getDataFilter(valueInput) {
+      this.isLoading = true;
+
       const employeesAPI = await axios.get(
         `http://api.manhnv.net/v1/Employees/employeeFilter?pageSize=100&employeeFilter=${valueInput}`
       );
       this.employees = employeesAPI.data.Data;
+
+      this.isLoading = false;
     },
 
+    // fix cứng value của trạng thái công việc
     statusWordString(statusWord) {
       switch (statusWord) {
         case 0:
@@ -280,6 +321,8 @@ export default {
           return "Nhân viên";
       }
     },
+
+    // format ngày tháng năm để hiển thị lên table
     formatDate(dateString) {
       if (dateString !== null) {
         var res = dateString.split("-");
@@ -290,12 +333,16 @@ export default {
       }
       return "";
     },
+
+    // format tiền lương
     formatSalary(salary) {
       if (salary !== null) {
         return salary.toLocaleString("vi-VN");
       }
       return "";
     },
+
+    // format ngày tháng năm để đúng định dạng insert
     formatDateToForm(dateString) {
       if (dateString !== null) {
         var res = dateString.split("-");
@@ -307,6 +354,7 @@ export default {
       return "";
     },
 
+    // sự kiện filter theo tên, mã nhân viên, sđt
     async filterInput(txtInput) {
       let valueInput = txtInput.target.value;
       if (valueInput) {
@@ -315,10 +363,38 @@ export default {
         await this.initEmployee();
       }
     },
+
+    // hiện alert thông báo
+    showAlertData(alert) {
+      $(".textAlertData").text(alert);
+      $(".alertToggleData").css("display", "flex").delay(3000).fadeOut("slow");
+    },
+
+    async getEmployeeByDepartment(valueInput, departmentId) {
+      this.isLoading = true;
+
+      const employeesAPI = await axios.get(
+        `http://api.manhnv.net/v1/Employees/employeeFilter?pageSize=100&employeeFilter=${valueInput}&departmentId=${departmentId}`
+      );
+      this.employees = employeesAPI.data.Data;
+
+      this.isLoading = false;
+    },
+
+    async OnClick(textInput, employeeId) {
+      let text = $(".inputbox-filter").val();
+      if (text) {
+        $("#dropdownMenuButtonDepartment").text(textInput);
+        await this.getEmployeeByDepartment(text, employeeId);
+      } else {
+        alert("Nhập dữ liệu");
+      }
+    },
   },
 
   data() {
     return {
+      isLoading: false,
       employees: [],
       departments: [],
       positions: [],
@@ -332,6 +408,15 @@ export default {
     await this.initEmployee();
   },
 };
+
+// $(document).ready(function () {
+//   $(document).on("click", ".selectDepartment", function () {
+//     $("#dropdownMenuButtonDepartment").text($(this).text());
+//     let text = $(".inputbox-filter").val();
+//     let id = $(this).prop("id");
+//     this.getEmployeeByDepartment(text, id);
+//   });
+// });
 </script>
 
 <style scoped>
@@ -542,5 +627,17 @@ export default {
 
 .footer-table-right {
   text-align: right;
+}
+
+.alertToggleData {
+  position: absolute;
+  display: none;
+  align-items: center;
+  top: 47px;
+  right: 15px;
+}
+
+.textAlertData {
+  margin-right: 20px;
 }
 </style>

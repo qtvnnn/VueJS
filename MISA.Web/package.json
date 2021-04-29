@@ -16,7 +16,8 @@
     "core-js": "^3.6.5",
     "vue": "^2.6.11",
     "vue-confirm-dialog": "^1.0.2",
-    "vue-currency-input": "^1.22.6"
+    "vue-currency-input": "^1.22.6",
+    "vue-loading-overlay": "^3.4.2"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "~4.5.0",

@@ -189,6 +189,7 @@
                       class="form-control"
                       type="date"
                       v-model="employee.DateOfBirth"
+                      min="1900-01-01"
                     />
                   </div>
                 </div>
@@ -322,13 +323,14 @@
                   <label class="label-input">Mức lương cơ bản</label>
                   <div class="input-group">
                     <currency-input
-                      currency="VND"
                       class="form-control"
                       id="txtSalary"
                       fieldName="Salary"
                       type="text"
                       style="border-right: none"
                       v-model="employee.Salary"
+                      currency="VND"
+                      locale="de"
                     />
                     <div class="input-group-append">
                       <span
@@ -361,7 +363,6 @@
             </div>
           </div>
         </div>
-
         <div class="dialog-footer">
           <button
             id="btnCancel"
@@ -387,37 +388,44 @@ export default {
     isHide: Boolean,
     employee: Object,
     initEmployee: Function,
+    showAlertData: Function,
     requestStatus: Number,
     departments: Array,
     positions: Array,
   },
   methods: {
+    // sự kiện đóng dialog input form
     btnCancelOnClick() {
-      this.$emit("closePopup", true);
-      removeWarningEmpty();
+      this.$emit("closePopup", true); //đóng dialog
+      removeWarningEmpty(); // bỏ cảnh báo field input
     },
+
+    // tạo mới hoặc sửa thông tin nhân viên
     async saveEmployee() {
-      var count = countEmpty();
+      var count = countEmpty(); // đếm số input bắt buộc không hợp lệ
       if (count === 0) {
-        this.$emit("closePopup", true);
+        this.$emit("closePopup", true); //đóng dialog
+        this.employee.DateOfBirth = validateDate(this.employee.DateOfBirth); // validate theo maxdate and mindate
         if (this.requestStatus == 0) {
+          //0: thêm mới nhân viên
           const response = await axios.post(
             "http://api.manhnv.net/v1/Employees",
             this.employee
           );
           console.log(response);
-          alert("Thêm mới nhân viên thành công");
+          this.showAlertData("Thêm mới nhân viên thành công");
         } else {
+          // sửa nhân viên
           const response = await axios.put(
             "http://api.manhnv.net/v1/Employees/" + this.employee.EmployeeId,
             this.employee
           );
           console.log(response);
-          alert("Cập nhật thông tin nhân viên thành công");
+          this.showAlertData("Sử thông tin mô nhân viên thành công");
         }
-        await this.initEmployee();
+        await this.initEmployee(); // cập nhật lại dự liệu
       } else {
-        warningEmpty();
+        warningEmpty(); // cảnh báo các field input chưa hợp lệ
         showAlert("Vui lòng điền đẩy đủ thông tin quan trọng!");
       }
     },
@@ -429,7 +437,13 @@ export default {
 };
 
 $(document).ready(function () {
+  // set max date in datetimePicker
+  $("#dtDateOfBirth").prop("max", getMaxDate());
+
+
+  // check input hợp lệ với sự kiện khi tab hoặc click ra khỏi field input
   $(document).on("blur", "#txtFullName", function () {
+    // họ tên
     if (!$(this).val()) {
       $(this).addClass("input-warning");
       showAlert("Vui lòng điền họ tên!");
@@ -438,6 +452,7 @@ $(document).ready(function () {
     }
   });
   $(document).on("blur", "#txtEmail", function () {
+    // email
     if (isEmailValidate($(this).val())) {
       $(this).removeClass("input-warning");
     } else {
@@ -446,6 +461,7 @@ $(document).ready(function () {
     }
   });
   $(document).on("blur", "#txtPhoneNumber", function () {
+    // số điện thoại
     if (isPhoneNumberValidate($(this).val())) {
       $(this).removeClass("input-warning");
     } else {
@@ -454,6 +470,7 @@ $(document).ready(function () {
     }
   });
   $(document).on("blur", "#txtIdentityNumber", function () {
+    // số cmnd, cccd
     if (isIdentityNumberValidate($(this).val())) {
       $(this).removeClass("input-warning");
     } else {
@@ -461,8 +478,25 @@ $(document).ready(function () {
       showAlert("Vui lòng điền số CMND không hợp lệ!");
     }
   });
+  $(document).on("blur", "#dtDateOfBirth", function () {
+    // ngày sinh
+    const a = validateDate($(this).val());
+    $(this).val(a); //nếu cố tình nhập thời gian vượt quá khoảng min max thì set lại giá trị min hoặc max
+  });
+  // $(document).on("blur", "#txtSalary", function () {
+  //   let format = parseFloat(this.value.replace(/,/g, ""))
+  //     .toString()
+  //     .replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  //   $(this).val(format);
+  // });
 });
 
+// regex
+const emailRe = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+const phoneNo = /^\d{10}$/;
+const IdenNo = /^\d{9,12}$/;
+
+// đếm field input trống và dữ liệu không hợp lệ
 function countEmpty() {
   let count = 0;
   $(document)
@@ -483,6 +517,8 @@ function countEmpty() {
   }
   return count;
 }
+
+// cảnh báo các field input trống
 function warningEmpty() {
   $(".dialog-detail")
     .find(".require-not-null")
@@ -492,14 +528,13 @@ function warningEmpty() {
       }
     });
 }
+
+// xóa cảnh báo các field input trống
 function removeWarningEmpty() {
   $(document).find(".input-warning").removeClass("input-warning");
 }
 
-const emailRe = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-const phoneNo = /^\d{10}$/;
-const IdenNo = /^\d{9,12}$/;
-
+// kiểm tra email hợp lệ
 function isEmailValidate(email) {
   if (!emailRe.test(email)) {
     return false;
@@ -507,6 +542,8 @@ function isEmailValidate(email) {
     return true;
   }
 }
+
+// kiểm tra số điện thoại hợp lệ
 function isPhoneNumberValidate(phone) {
   if (!phoneNo.test(phone)) {
     return false;
@@ -514,6 +551,8 @@ function isPhoneNumberValidate(phone) {
     return true;
   }
 }
+
+// kiểm tra số cmnd hợp lệ
 function isIdentityNumberValidate(Identity) {
   if (!IdenNo.test(Identity)) {
     return false;
@@ -521,8 +560,36 @@ function isIdentityNumberValidate(Identity) {
     return true;
   }
 }
+
+// hiện alert thông báo
 function showAlert(alert) {
   $(".textAlert").text(alert);
-  $("#alert").css("display", "flex").delay(2000).fadeOut("slow");
+  $(".alertToggle").css("display", "flex").delay(2000).fadeOut("slow");
+}
+
+// validate range date
+function validateDate(date) {
+  return date < $("#dtDateOfBirth").prop("min")
+    ? $("#dtDateOfBirth").prop("min")
+    : date > getMaxDate()
+    ? getMaxDate()
+    : date;
+}
+
+// lấy ngày hiện tại
+function getMaxDate() {
+  let date = new Date();
+  let month = date.getMonth() + 1;
+  let day = date.getDate();
+  let dateNow =
+    date.getFullYear() +
+    "-" +
+    (month < 10 ? "0" : "") +
+    month +
+    "-" +
+    (day < 10 ? "0" : "") +
+    day;
+
+  return dateNow;
 }
 </script>
