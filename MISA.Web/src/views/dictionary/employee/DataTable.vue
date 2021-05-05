@@ -463,7 +463,7 @@ export default {
   background-repeat: no-repeat;
   background-size: 20px;
   background-position: center;
-  background-image: url("/assets/icon/add.png");
+  background-image: url("../../../assets/icon/add.png");
 }
 
 .customer-filter {
@@ -510,7 +510,7 @@ export default {
   background-repeat: no-repeat;
   background-size: 20px;
   background-position: center;
-  background-image: url("/assets/icon/search.png");
+  background-image: url("../../../assets/icon/search.png");
 }
 
 .input-group-text {
@@ -544,7 +544,7 @@ export default {
 }
 
 .customer-filter-right .btn-reset-filter .icon-reset-filter {
-  background-image: url("/assets/icon/refresh.png");
+  background-image: url("../../../assets/icon/refresh.png");
 }
 
 .data-table {
