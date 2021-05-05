@@ -204,7 +204,7 @@
 import * as axios from "axios";
 import $ from "jquery";
 import Details from "./FormDetail.vue";
-import BaseLoading from "../../components/base/BaseLoading";
+import BaseLoading from "../../../components/base/BaseLoading";
 export default {
   name: "Content",
   components: {
@@ -252,14 +252,14 @@ export default {
       this.isLoading = true;
       // get all employee
       const employeesAPI = await axios.get(
-        "http://api.manhnv.net/v1/Employees"
+        "http://cukcuk.manhnv.net/v1/employees"
       );
       // get all department
       const departmentAPI = await axios.get(
-        "http://api.manhnv.net/api/Department"
+        "http://cukcuk.manhnv.net/api/Department"
       );
       // get all position
-      const positionAPI = await axios.get("http://api.manhnv.net/v1/Positions");
+      const positionAPI = await axios.get("http://cukcuk.manhnv.net/v1/Positions");
       this.employees = employeesAPI.data;
       this.departments = departmentAPI.data;
       this.positions = positionAPI.data;
@@ -278,7 +278,7 @@ export default {
         callback: async (confirm) => {
           if (confirm) {
             const response = await axios.delete(
-              "http://api.manhnv.net/v1/Employees/" + employeeId
+              "http://cukcuk.manhnv.net/v1/Employees/" + employeeId
             );
             console.log(response);
             await this.initEmployee();
@@ -291,7 +291,7 @@ export default {
     // gọi api lấy mã nhân viên mới
     async getNewEmployeeCode() {
       const newEmployeeCodeAPI = await axios.get(
-        "http://api.manhnv.net/v1/Employees/NewEmployeeCode"
+        "http://cukcuk.manhnv.net/v1/Employees/NewEmployeeCode"
       );
       return newEmployeeCodeAPI.data;
     },
@@ -301,7 +301,7 @@ export default {
       this.isLoading = true;
 
       const employeesAPI = await axios.get(
-        `http://api.manhnv.net/v1/Employees/employeeFilter?pageSize=100&employeeFilter=${valueInput}`
+        `http://cukcuk.manhnv.net/v1/Employees/employeeFilter?pageSize=100&employeeFilter=${valueInput}`
       );
       this.employees = employeesAPI.data.Data;
 
@@ -374,7 +374,7 @@ export default {
       this.isLoading = true;
 
       const employeesAPI = await axios.get(
-        `http://api.manhnv.net/v1/Employees/employeeFilter?pageSize=100&employeeFilter=${valueInput}&departmentId=${departmentId}`
+        `http://cukcuk.manhnv.net/v1/Employees/employeeFilter?pageSize=100&employeeFilter=${valueInput}&departmentId=${departmentId}`
       );
       this.employees = employeesAPI.data.Data;
 
@@ -463,7 +463,7 @@ export default {
   background-repeat: no-repeat;
   background-size: 20px;
   background-position: center;
-  background-image: url("../../assets/icon/add.png");
+  background-image: url("/assets/icon/add.png");
 }
 
 .customer-filter {
@@ -510,7 +510,7 @@ export default {
   background-repeat: no-repeat;
   background-size: 20px;
   background-position: center;
-  background-image: url("../../assets/icon/search.png");
+  background-image: url("/assets/icon/search.png");
 }
 
 .input-group-text {
@@ -544,7 +544,7 @@ export default {
 }
 
 .customer-filter-right .btn-reset-filter .icon-reset-filter {
-  background-image: url("../../assets/icon/refresh.png");
+  background-image: url("/assets/icon/refresh.png");
 }
 
 .data-table {

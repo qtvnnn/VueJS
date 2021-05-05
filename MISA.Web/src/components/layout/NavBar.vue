@@ -5,10 +5,10 @@
       <div class="logo"></div>
     </div>
     <div class="menu">
-      <div class="menu-item">
+      <router-link class="menu-item" to="/about">
         <div class="icon overview"></div>
         <div class="item-name">Tổng quan</div>
-      </div>
+      </router-link>
       <div class="menu-item">
         <div class="icon report"></div>
         <div class="item-name">Báo cáo</div>
@@ -17,14 +17,14 @@
         <div class="icon purchase"></div>
         <div class="item-name">Mua hàng</div>
       </div>
-      <div class="menu-item">
+      <router-link class="menu-item" to="/dictionary/customer">
         <div class="icon list-customer"></div>
         <div class="item-name">Danh mục khách hàng</div>
-      </div>
-      <div class="menu-item active">
+      </router-link>
+      <router-link class="menu-item active" to="/dictionary/employee">
         <div class="icon list-employee"></div>
         <div class="item-name">Danh mục nhân viên</div>
-      </div>
+      </router-link>
       <div class="menu-item">
         <div class="icon setting"></div>
         <div class="item-name">Thiết lập hệ thống</div>

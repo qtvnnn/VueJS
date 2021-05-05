@@ -73,7 +73,7 @@
   margin: 0 auto;
   border-radius: 50%;
   cursor: pointer;
-  background-image: url(../../assets/img/default-avatar.jpg);
+  background-image: url(/assets/img/default-avatar.jpg);
   background-repeat: no-repeat;
   background-position: center;
   background-size: cover;
@@ -409,7 +409,7 @@ export default {
         if (this.requestStatus == 0) {
           //0: thêm mới nhân viên
           const response = await axios.post(
-            "http://api.manhnv.net/v1/Employees",
+            "http://cukcuk.manhnv.net/v1/Employees",
             this.employee
           );
           console.log(response);
@@ -417,7 +417,7 @@ export default {
         } else {
           // sửa nhân viên
           const response = await axios.put(
-            "http://api.manhnv.net/v1/Employees/" + this.employee.EmployeeId,
+            "http://cukcuk.manhnv.net/v1/Employees/" + this.employee.EmployeeId,
             this.employee
           );
           console.log(response);

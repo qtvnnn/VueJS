@@ -6,22 +6,23 @@
     </div>
     <div class="body-right">
       <Header />
-      <Contetn />
+      <Content />
     </div>
   </div>
 </template>
 
 <script>
-import NavBar from "./components/NavBar.vue";
-import Header from "./components/Header.vue";
-import Contetn from "./components/Content/DataTable.vue";
+
+import NavBar from "@/components/layout/NavBar";
+import Header from "@/components/layout/Header";
+import Content from "@/components/layout/Content";
 
 export default {
   name: "App",
   components: {
     NavBar,
     Header,
-    Contetn,
+    Content,
   },
 };
 </script>
