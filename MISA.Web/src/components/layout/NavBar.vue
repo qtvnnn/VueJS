@@ -53,6 +53,6 @@ $(document).ready(function ($) {
 <style scoped>
 .active {
   background: #019160 !important;
-  color: #ffffff;
+  color: #ffffff !important; 
 }
 </style>

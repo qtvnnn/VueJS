@@ -607,7 +607,7 @@ export default {
 
 .footer-table-center .paging-number .active {
   background-color: #01b075;
-  color: #ffffff;
+  color: #ffffff !important;
 }
 
 .btn-paging-first,
