@@ -47,6 +47,11 @@
     background-color: #e9e9e9;
 }
 
+.body-left .menu .menu-item:focus {
+    background: #019160 !important;
+    color: #ffffff !important; 
+}
+
 .body-left .menu .menu-item .icon {
     width: 50px;
     height: 45px;
