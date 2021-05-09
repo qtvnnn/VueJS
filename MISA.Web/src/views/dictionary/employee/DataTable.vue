@@ -129,13 +129,13 @@
             <td>{{ employee.EmployeeCode }}</td>
             <td>{{ employee.FullName }}</td>
             <td>{{ employee.GenderName }}</td>
-            <td>{{ formatDate(employee.DateOfBirth) }}</td>
+            <td>{{ employee.DateOfBirth | formatDate }}</td>
             <td style="float: right">{{ employee.PhoneNumber }}</td>
             <td>{{ employee.Email }}</td>
             <td>{{ employee.PositionName }}</td>
             <td>{{ employee.DepartmentName }}</td>
             <td style="float: right">
-              {{ formatSalary(employee.Salary) }}
+              {{ employee.Salary | formatSalary }}
             </td>
             <td>{{ statusWordString(employee.WorkStatus) }}</td>
             <td class="btn-delete-employee">
@@ -322,26 +322,6 @@ export default {
       }
     },
 
-    // format ngày tháng năm để hiển thị lên table
-    formatDate(dateString) {
-      if (dateString !== null) {
-        var res = dateString.split("-");
-        var year = res[0];
-        var month = res[1];
-        var day = res[2].split("T")[0];
-        return day + "/" + month + "/" + year;
-      }
-      return "";
-    },
-
-    // format tiền lương
-    formatSalary(salary) {
-      if (salary !== null) {
-        return salary.toLocaleString("vi-VN");
-      }
-      return "";
-    },
-
     // format ngày tháng năm để đúng định dạng insert
     formatDateToForm(dateString) {
       if (dateString !== null) {
@@ -409,14 +389,6 @@ export default {
   },
 };
 
-// $(document).ready(function () {
-//   $(document).on("click", ".selectDepartment", function () {
-//     $("#dropdownMenuButtonDepartment").text($(this).text());
-//     let text = $(".inputbox-filter").val();
-//     let id = $(this).prop("id");
-//     this.getEmployeeByDepartment(text, id);
-//   });
-// });
 </script>
 
 <style scoped>
